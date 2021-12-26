@@ -1,0 +1,70 @@
+esphome:
+  name: portail
+  platform: ESP8266
+  board: esp_wroom_02
+
+
+# Enable logging
+# logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret hass_api_key
+
+ota:
+  password: !secret ota_key
+  id: my_ota
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 1min
+
+status_led:
+  id: led_statut
+  pin: 
+    number: GPIO0
+    inverted: true
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Note: you may try to comment that line if the Wi-Fi connection is not stable...
+  power_save_mode: "high"
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO13
+    id: button_press
+
+switch:
+  - platform: gpio
+    pin: GPIO12
+    id: passage_pieton
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: passage_pieton
+
+  - platform: gpio
+    pin: GPIO14
+    id: passage_voiture
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: passage_voiture
+
+button:
+  - platform: template
+    name: Passage Piéton
+    icon: "mdi:gate-arrow-right"
+    on_press:
+      switch.turn_on: passage_pieton
+
+  - platform: template
+    name: Passage Voiture
+    icon: "mdi:gate"
+    on_press:
+      switch.turn_on: passage_voiture
+
+
+
+
